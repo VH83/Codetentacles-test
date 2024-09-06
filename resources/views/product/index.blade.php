@@ -55,8 +55,9 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $product->amount }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $product->description }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <img src="{{ asset('storage/images/' . $product->image) }}" alt="{{ $product->name }}" class="h-16 w-16 object-cover rounded">
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-16 w-16 object-cover rounded">
                             </td>
+                            
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <a href="{{ route('product.edit', $product->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                 <form action="{{ route('product.destroy', $product->id) }}" method="POST" class="inline ml-4">

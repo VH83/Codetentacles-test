@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -13,6 +14,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
+        
         return view('product.index', [
             'products' => $products
         ]);
@@ -31,23 +33,19 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
-            'description' => 'string',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
+        
         $imagePath = $request->file('image')->store('public/images');
+    
+        $imagePath = str_replace('public/', '', $imagePath);
 
         $product = Product::create([
-            'name' => $request->input('name'),
-            'amount' => $request->input('amount'),
-            'description' => $request->input('description'),
-            'image' => basename($imagePath), 
+            'name' => $request['name'],
+            'amount' => $request['amount'],
+            'description' => $request['description'],
+            'image' => base_path($imagePath), 
         ]);
 
-        return redirect()->route('product.create')->with('success', 'Product created successfully!');
+        return redirect()->route('product.index')->with('success', 'Product created successfully!');
     
     }
 
@@ -64,7 +62,9 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return view('product.edit', [
+            'product' =>$product
+        ]);
     }
 
     /**
@@ -72,7 +72,29 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'amount' => 'required|numeric',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+    
+        $product->name = $request->input('name');
+        $product->amount = $request->input('amount');
+        $product->description = $request->input('description');
+    
+        if ($request->hasFile('image')) {
+            if ($product->image) {
+                Storage::delete('public/images/' . $product->image);
+            }
+    
+            $imagePath = $request->file('image')->store('public/images');
+            $product->image = str_replace('public/', '', $imagePath);
+        }   
+    
+        $product->save();
+    
+        return redirect()->route('product.index')->with('success', 'Product updated successfully!');
     }
 
     /**
