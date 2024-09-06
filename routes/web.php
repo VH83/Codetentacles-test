@@ -4,12 +4,13 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/', function () {
+    return view('welcome');
+})->name('/');
 
-Route::get('/', [AuthController::class, 'login_form'])->name('login-form');
+Route::get('login', [AuthController::class, 'login_form'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
 
 //routes for registration 

@@ -60,7 +60,7 @@ class AuthController extends Controller
             $user->otp = '';
             $user->save();
     
-            return redirect()->route('login-form')->with('success', 'Email verified successfully.');
+            return redirect()->route('login')->with('success', 'Email verified successfully.');
         } else {
             return back()->with('failed', 'invalid otp');
         }
@@ -80,5 +80,10 @@ class AuthController extends Controller
             return back()->with('failed', '! Invalid credentials !');
         }
         
+    }
+
+    public function logout(){
+        auth()->logout();
+        return redirect()->route('/');
     }
 }

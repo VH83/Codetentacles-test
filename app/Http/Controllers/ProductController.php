@@ -12,7 +12,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('product.index');
+        $products = Product::all();
+        return view('product.index', [
+            'products' => $products
+        ]);
     }
 
     /**
@@ -28,7 +31,24 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'description' => 'string',
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $imagePath = $request->file('image')->store('public/images');
+
+        $product = Product::create([
+            'name' => $request->input('name'),
+            'amount' => $request->input('amount'),
+            'description' => $request->input('description'),
+            'image' => basename($imagePath), 
+        ]);
+
+        return redirect()->route('product.create')->with('success', 'Product created successfully!');
+    
     }
 
     /**
@@ -60,6 +80,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+
+        return back()->with('success', 'product deleted successfully');
     }
 }
